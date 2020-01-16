@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Main.qml</file>
+        <file>BodyTemplateDialog.qml</file>
+        <file>WeatherTemplateDialog.qml</file>
+    </qresource>
+</RCC>
