@@ -22,8 +22,8 @@ import QtQuick.Extras 1.4
 
 Window {
     id: root
-    width: 1080
-    height: 1488
+    width: 1000
+    height: 1000
     color: '#00000000'
 
     visible: true
@@ -32,7 +32,7 @@ Window {
     BodyTemplateDialog {
         id: bodyTemplate
         anchors.centerIn: parent
-        visible: true
+        visible: false
 
         property string title: ""
         property string subtitle: ""
@@ -62,6 +62,7 @@ Window {
 
         onRenderTemplate: {
             console.log("Received renderTemplate, type = " + GuiMetadata.type)
+
             if(GuiMetadata.type == "BodyTemplate1" || GuiMetadata.type == "BodyTemplate2") {
                 // Normally setting the target to visible would be after changes to the
                 // content, but I was seeing better behavior during testing by doing it
@@ -80,6 +81,7 @@ Window {
                     bodyTemplate.imageContentSource = GuiMetadata.bodyImageSmallUrl
                 }
             } else if(GuiMetadata.type == "WeatherTemplate") {
+		console.log("Received weather template")
                 bodyTemplate.visible = false
                 weatherTemplate.visible = true
 
@@ -94,6 +96,7 @@ Window {
                 weatherTemplate.highTemperatureArrowSource = GuiMetadata.weatherHighTemperatureArrowMediumDarkBgUrl
             } else {
                 // Should not happen, but just in case
+		console.log("Received Unsupported Template?")
                 bodyTemplate.title = "Unsupported Template"
                 bodyTemplate.subtitle = ""
                 bodyTemplate.textContent = "The display template for this response is currently unsupported."
@@ -116,6 +119,6 @@ Window {
 
     function hide() {
         console.log("hiding window!")
-        homescreen.hideWindow("alexa-viewer")
+        homescreen.deactivate_app("alexa-viewer")
     }
 }
