@@ -38,7 +38,7 @@ add_executable(${TARGET_NAME}
 
 pkg_check_modules(QLIBWINDOWMGR REQUIRED qlibwindowmanager)
 pkg_check_modules(QLIBHOMESCREEN REQUIRED qlibhomescreen)
-pkg_check_modules(QTAPPFW REQUIRED qtappfw)
+pkg_check_modules(QTAPPFW REQUIRED qtappfw-voice-metadata)
 pkg_check_modules(LIBAFBWSC REQUIRED libafbwsc)
 
 include_directories(
