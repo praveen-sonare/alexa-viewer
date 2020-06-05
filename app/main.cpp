@@ -35,6 +35,7 @@
 #include <iostream>
 
 QString my_app_id = QString("alexa-viewer");
+static bool started = false;
 
 // this and the agl-shell extension should be added in some kind of a wrapper
 // for easy usage
@@ -69,24 +70,37 @@ static void
 application_id_event(void *data, struct agl_shell_desktop *agl_shell_desktop,
 		     const char *app_id)
 {
-	(void) data;
-	(void) agl_shell_desktop;
-	// un-used
+	Shell *aglShell = static_cast<Shell *>(data);
+
 	qInfo() << "app_id: " << app_id;
+
+	/* if we find our name here, means we just been started, as the application_id
+	 * event is being sent when we connect, do distribute all the 'current' running
+	 * applications/app_ids and when a new is being created */
+	if (strcmp(app_id, my_app_id.toStdString().c_str()))
+		return;
+
+	if (started)
+		return;
+
+	/* we de-activate ourselves the first time we start, as we start as
+	 * visible: 'false' */
+	aglShell->deactivate_app(my_app_id);
+	started = true;
+	qDebug() << "appplication de-activated: " << my_app_id;
 }
 
 static void
 application_id_state(void *data, struct agl_shell_desktop *agl_shell_desktop,
-		const char *app_id, const char *app_data, uint32_t app_state, uint32_t app_role)
+		     const char *app_id, const char *app_data,
+		     uint32_t app_state, uint32_t app_role)
 {
-	(void) data;
 	(void) app_data;
-	(void) app_role;
-	(void) app_state;
-	(void) app_id;
 	(void) agl_shell_desktop;
+	(void) app_id;
+	(void) app_state;
+	(void) app_role;
 
-	// un-used
 }
 
 static const struct agl_shell_desktop_listener agl_shell_desk_listener = {
@@ -239,10 +253,10 @@ int main(int argc, char *argv[])
 		exit(EXIT_FAILURE);
 	}
 
-	agl_shell_desktop_add_listener(shell, &agl_shell_desk_listener, NULL);
 
 	std::shared_ptr<struct agl_shell_desktop> agl_shell{shell, agl_shell_desktop_destroy};
 	Shell *aglShell = new Shell(agl_shell, &app);
+	agl_shell_desktop_add_listener(shell, &agl_shell_desk_listener, aglShell);
 
 	// before loading the QML we can tell the compositor that we'd like to
 	// be a pop-up kind of window: we need to do this before creating the
