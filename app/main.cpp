@@ -266,7 +266,8 @@ int main(int argc, char *argv[])
 	// note that x and y initial positioning values have to be specified
 	// here (the last two args)
 	aglShell->set_window_props(nullptr, my_app_id,
-				   AGL_SHELL_DESKTOP_APP_ROLE_POPUP, 0, 0);
+				   AGL_SHELL_DESKTOP_APP_ROLE_POPUP,
+				   0, 0, 0, 0, 0, 0);
 
 	// Load qml
 	QQmlApplicationEngine engine;
