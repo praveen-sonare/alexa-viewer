@@ -55,7 +55,9 @@ signals:
 public slots: // calls out of qml into CPP
 	void activate_app(QWindow *win, const QString &app_id, const QString &app_data);
 	void deactivate_app(const QString &app_id);
-	void set_window_props(QWindow *win, const QString &app_id, uint32_t props, int x, int y);
+	void set_window_props(QWindow *win, const QString &app_id,
+			uint32_t props, int x, int y, int bx, int by,
+			int bwidth, int bheight);
 };
 
 #endif // SHELLDESKTOP_H

@@ -77,7 +77,9 @@ void Shell::deactivate_app(const QString &app_id)
 	flush_connection();
 }
 
-void Shell::set_window_props(QWindow *win, const QString &app_id, uint32_t props, int x, int y)
+void Shell::set_window_props(QWindow *win, const QString &app_id,
+			     uint32_t props, int x, int y, int bx, int by,
+			     int bwidth, int bheight)
 {
 	QScreen *screen = nullptr;
 	struct wl_output *output;
@@ -95,6 +97,6 @@ void Shell::set_window_props(QWindow *win, const QString &app_id, uint32_t props
 	output = getWlOutput(screen);
 	agl_shell_desktop_set_app_property(this->shell.get(),
 					   app_id.toStdString().c_str(),
-					   props, x, y, output);
+					   props, x, y, bx, by, bwidth, bheight, output);
 	flush_connection();
 }
