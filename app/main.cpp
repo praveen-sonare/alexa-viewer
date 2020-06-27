@@ -70,24 +70,8 @@ static void
 application_id_event(void *data, struct agl_shell_desktop *agl_shell_desktop,
 		     const char *app_id)
 {
-	Shell *aglShell = static_cast<Shell *>(data);
+	qInfo() << "Application " << app_id << " created";
 
-	qInfo() << "app_id: " << app_id;
-
-	/* if we find our name here, means we just been started, as the application_id
-	 * event is being sent when we connect, do distribute all the 'current' running
-	 * applications/app_ids and when a new is being created */
-	if (strcmp(app_id, my_app_id.toStdString().c_str()))
-		return;
-
-	if (started)
-		return;
-
-	/* we de-activate ourselves the first time we start, as we start as
-	 * visible: 'false' */
-	aglShell->deactivate_app(my_app_id);
-	started = true;
-	qDebug() << "appplication de-activated: " << my_app_id;
 }
 
 static void
@@ -97,10 +81,43 @@ application_id_state(void *data, struct agl_shell_desktop *agl_shell_desktop,
 {
 	(void) app_data;
 	(void) agl_shell_desktop;
-	(void) app_id;
-	(void) app_state;
-	(void) app_role;
 
+	Shell *aglShell = static_cast<Shell *>(data);
+
+	qDebug() << "app_id " << app_id << " app_state " << app_state <<
+		" app_role " << app_role;
+
+	/* ignore others apps */
+	if (app_role != AGL_SHELL_DESKTOP_APP_ROLE_POPUP &&
+	    strcmp(app_id, my_app_id.toStdString().c_str()))
+		return;
+
+	if (app_state == AGL_SHELL_DESKTOP_APP_STATE_ACTIVATED) {
+		/* if we've been already started */
+		if (started)
+			return;
+
+		/* we de-activate ourselves the first time we start, as we
+		 * start as visible: 'false'
+		 *
+		 * application_id event will not be sufficient to handle this
+		 * because at that time there might be a chance that we weren't
+		 * really 'activated'; meaning that we send the deactivate request,
+		 * before the compositor activated us; so we wait until we get
+		 * the activation event here, as at this stage we are sure we
+		 * are activated.
+		 *
+		 * Later activations of the alexa-viewer will end up here as
+		 * well, but we guard that with a local variable; also
+		 * de-activation will generate the event one more time, this
+		 * time with the AGL_SHELL_DESKTOP_APP_STATE_DEACTIVATED
+		 * app_state.
+		 */
+		started = true;
+
+		qDebug() << "appplication " << app_id << " de-activated";
+		aglShell->deactivate_app(my_app_id);
+	}
 }
 
 static const struct agl_shell_desktop_listener agl_shell_desk_listener = {
