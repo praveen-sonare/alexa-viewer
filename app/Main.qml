@@ -29,6 +29,12 @@ Window {
     visible: true
     flags: Qt.FramelessWindowHint
 
+    Component.onCompleted: {
+        // Center window
+        root.x = root.screen.virtualX + root.screen.width / 2 - root.width / 2;
+        root.y = root.screen.virtualY + root.screen.height / 2 - root.height / 2;
+    }
+
     BodyTemplateDialog {
         id: bodyTemplate
         anchors.centerIn: parent
