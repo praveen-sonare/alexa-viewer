@@ -24,6 +24,8 @@
 #include <QtQml/QQmlContext>
 #include <QtQml/qqml.h>
 #include <QQuickWindow>
+#include <QQmlComponent>
+#include <QQmlProperty>
 #include <QtQuickControls2/QQuickStyle>
 #include <qpa/qplatformnativeinterface.h>
 
@@ -291,7 +293,16 @@ int main(int argc, char *argv[])
 	QQmlContext *context = engine.rootContext();
 	context->setContextProperty("homescreen", aglShell);
 	context->setContextProperty("GuiMetadata", new GuiMetadata(bindingAddress, context));
-	engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
+	QQmlComponent component(&engine,
+				QUrl(QStringLiteral("qrc:/Main.qml")));
+	QObject *object = component.create();
+
+	// Update window position based on component (x, y)
+	int x = QQmlProperty::read(object, "x").toInt();
+	int y = QQmlProperty::read(object, "y").toInt();
+	aglShell->set_window_props(nullptr, my_app_id,
+				   AGL_SHELL_DESKTOP_APP_ROLE_POPUP,
+				   x, y, 0, 0, 0, 0);
 
 	// Create app framework client to handle events when window is not visible
 	AfbClient client(port, token.toStdString());
