@@ -28,6 +28,10 @@ find_package(Qt5Gui ${QT_MIN_VERSION} CONFIG REQUIRED Private)
 find_package(PkgConfig REQUIRED)
 find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner)
 
+pkg_check_modules(AGL_COMPOSITOR_PROTOCOLS REQUIRED agl-compositor-0.0.19-protocols)
+pkg_get_variable(AGL_COMPOSITOR_PROTOCOLS_PKGDATADIR agl-compositor-0.0.19-protocols pkgdatadir)
+set(AGL_COMPOSITOR_PROTOCOLS_PATH ${AGL_COMPOSITOR_PROTOCOLS_PKGDATADIR})
+
 qt5_add_resources(RESOURCES alexa-viewer.qrc)
 
 PROJECT_TARGET_ADD(alexa-viewer)
@@ -35,26 +39,26 @@ PROJECT_TARGET_ADD(alexa-viewer)
 add_custom_command(
 	OUTPUT  agl-shell-desktop-client-protocol.h
 	COMMAND ${WAYLAND_SCANNER_EXECUTABLE} client-header
-	< ${CMAKE_SOURCE_DIR}/app/protocol/agl-shell-desktop.xml
+	< ${AGL_COMPOSITOR_PROTOCOLS_PATH}/agl-shell-desktop.xml
 	> ${CMAKE_SOURCE_DIR}/app/agl-shell-desktop-client-protocol.h
-	DEPENDS ${CMAKE_SOURCE_DIR}/app/protocol/agl-shell-desktop.xml
+	DEPENDS ${AGL_COMPOSITOR_PROTOCOLS_PATH}/agl-shell-desktop.xml
 )
 
 
 add_custom_command(
 	OUTPUT  ${CMAKE_BINARY_DIR}/app/agl-shell-desktop-client-protocol.h
 	COMMAND ${WAYLAND_SCANNER_EXECUTABLE} client-header
-	< ${CMAKE_SOURCE_DIR}/app/protocol/agl-shell-desktop.xml
+	< ${AGL_COMPOSITOR_PROTOCOLS_PATH}/agl-shell-desktop.xml
 	> ${CMAKE_SOURCE_DIR}/app/agl-shell-desktop-client-protocol.h
-	DEPENDS ${CMAKE_SOURCE_DIR}/app/protocol/agl-shell-desktop.xml
+	DEPENDS ${AGL_COMPOSITOR_PROTOCOLS_PATH}/agl-shell-desktop.xml
 )
 
 add_custom_command(
 	OUTPUT  agl-shell-desktop-protocol.c
 	COMMAND ${WAYLAND_SCANNER_EXECUTABLE} code
-	< ${CMAKE_SOURCE_DIR}/app/protocol/agl-shell-desktop.xml
+	< ${AGL_COMPOSITOR_PROTOCOLS_PATH}/agl-shell-desktop.xml
 	> ${CMAKE_BINARY_DIR}/app/agl-shell-desktop-protocol.c
-	DEPENDS ${CMAKE_SOURCE_DIR}/app/protocol/agl-shell-desktop.xml
+	DEPENDS ${AGL_COMPOSITOR_PROTOCOLS_PATH}/agl-shell-desktop.xml
 )
 
 add_executable(${TARGET_NAME}
